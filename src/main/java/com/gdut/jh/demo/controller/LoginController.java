@@ -12,10 +12,7 @@ import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @CrossOrigin(origins = "*")
@@ -26,18 +23,7 @@ public class LoginController {
     @PostMapping("/login")
     @ResponseBody
     public Result login(@RequestBody User requestUser){
-        String username = requestUser.getUsername();
-        String password = requestUser.getPassword();
-        Subject subject = SecurityUtils.getSubject();
-        UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken(username,password);
-        usernamePasswordToken.setRememberMe(true);
-        try {
-            subject.login(usernamePasswordToken);
-            return ResultFactory.buildSuccessResult("登录成功",username);
-        } catch (AuthenticationException e) {
-            String message = "账号密码错误";
-            return ResultFactory.buildFailResult(message);
-        }
+        return getResult(requestUser);
     }
 
     @PostMapping("/register")
@@ -55,6 +41,27 @@ public class LoginController {
             requestUser.setSalt(salt);
             userService.addUser(requestUser);
             return ResultFactory.buildSuccessResult("注册成功",requestUser);
+        }
+    }
+
+    @PostMapping("/authentication")
+    @ResponseBody
+    public Result Authentication(@RequestBody User requestUser) {
+        return getResult(requestUser);
+    }
+
+    private Result getResult(@RequestBody User requestUser) {
+        String username = requestUser.getUsername();
+        String password = requestUser.getPassword();
+        Subject subject = SecurityUtils.getSubject();
+        UsernamePasswordToken usernamePasswordToken = new UsernamePasswordToken(username,password);
+        usernamePasswordToken.setRememberMe(true);
+        try {
+            subject.login(usernamePasswordToken);
+            return ResultFactory.buildSuccessResult("登录成功",username);
+        } catch (AuthenticationException e) {
+            String message = "账号密码错误";
+            return ResultFactory.buildFailResult(message);
         }
     }
 }
