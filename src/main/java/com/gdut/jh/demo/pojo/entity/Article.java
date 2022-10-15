@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.sql.Date;
 
 @Data
 @Entity
@@ -16,10 +17,12 @@ public class Article {
     int id;
     String title;
     String profile;
-    String content;
+    String md;
+    String html;
     String img;
     int len;
-    int viewCount;
-    int comCount;
-    int appCount;
+    int vtimes;
+    int ctimes;
+    int atimes;
+    String date;
 }

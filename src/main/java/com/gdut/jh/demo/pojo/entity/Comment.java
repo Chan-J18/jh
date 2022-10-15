@@ -18,7 +18,7 @@ public class Comment {
     @Column(name = "id")
     int id;
     String content;
-    Date date;
+    String date;
 }
 
 
