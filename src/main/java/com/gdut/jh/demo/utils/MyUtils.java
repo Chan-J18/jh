@@ -1,5 +1,8 @@
 package com.gdut.jh.demo.utils;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Random;
 
 public class MyUtils {
@@ -20,6 +23,19 @@ public class MyUtils {
         content=content.replaceAll("</?[a-zA-Z]+[^><]*>","");
         content.replaceAll("\n","");
         return content;
+    }
+
+    public static int compare(String s1,String s2) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            Date date1 = sdf.parse(s1);
+            Date date2 = sdf.parse(s2);
+            if(date1.before(date2)) return 1;
+            else return -1;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 
 }

@@ -9,15 +9,15 @@ import com.gdut.jh.demo.pojo.tmp.atopics;
 import com.gdut.jh.demo.service.ArticleService;
 import com.gdut.jh.demo.utils.MyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 @CrossOrigin
@@ -82,5 +82,36 @@ public class ArticleController {
             articleService.saveAandT(ta);
         }
         return ResultFactory.buildSuccessResult("主题保存成功！");
+    }
+
+    @GetMapping("/article/hot")
+    @ResponseBody
+    public Page getHotArticles(){
+        return articleService.getHotArticles();
+    }
+
+
+    @GetMapping("/article/{size}/{page}")
+    @ResponseBody
+    public Page listArticles(@PathVariable("size") int size, @PathVariable("page") int page){
+        return articleService.list(page-1,size);
+    }
+
+    @GetMapping("/article/header")
+    @ResponseBody
+    public Page getHeaderArticles(){
+        return articleService.getHeaderArticles();
+    }
+
+    @GetMapping("/article/detail/{id}")
+    @ResponseBody
+    public Article getArticle(@PathVariable("id") int aid){
+        return articleService.getArticle(aid);
+    }
+
+    @GetMapping("/topic/{type}/{size}/{page}")
+    @ResponseBody
+    public int getTopics(@PathVariable("type") String  type,@PathVariable("size") int size, @PathVariable("page") int page){
+        return articleService.getTopics(type,size,page);
     }
 }
