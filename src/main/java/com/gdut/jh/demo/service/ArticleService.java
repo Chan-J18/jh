@@ -25,36 +25,48 @@ public class ArticleService {
     @Autowired
     TopicDao topicDao;
 
+    //发布文章
     public int addArticle(Article article){
         return articleDao.save(article).getId();
     }
 
+    //记录文章和标签关系
     public void saveAandT(topic_article ta){
         topicArticleDao.save(ta);
     }
 
-    public List<Article> getArticles() { return articleDao.findAll(); }
-
+    //分页获取文章
     public Page list(int page, int size) {
         Sort sort = Sort.by(Sort.Direction.DESC,"id");
         return articleDao.findAll(PageRequest.of(page,size,sort));
     }
-    public int getTopics(String type, int page,int size){
+    //分页获取对应标签的文章
+    public List<Article> getTopics(String type, int page,int size){
         Topic topic = topicDao.findByName(type);
         int tid = topic.getId();
         List<Integer> aids = topicArticleDao.findByTid(tid).stream()
                 .map(topic_article::getAid).collect(Collectors.toList());
-        return 0;
+        return articleDao.findByAids(aids,(page-1)*size,size);
     }
+    //获取头条文章
     public Page getHeaderArticles(){
         Sort sort = Sort.by(Sort.Direction.DESC,"id");
         return articleDao.findAll(PageRequest.of(0,6,sort));
     }
+    //获取热点文章
     public Page getHotArticles(){
         Sort sort = Sort.by(Sort.Direction.DESC,"vtimes");
         return articleDao.findAll(PageRequest.of(0,10,sort));
     }
+    //获取文章详细页内容
     public Article getArticle(int id){
         return articleDao.findById(id);
+    }
+    //获取文章对应标签项
+    public List<String> getTypes(int aid) {
+        List<Integer> tids = topicArticleDao.findByAid(aid).stream()
+                .map(topic_article::getTid).collect(Collectors.toList());
+        return topicDao.findByIdIn(tids).stream()
+                .map(Topic::getName).collect(Collectors.toList());
     }
 }

@@ -3,17 +3,23 @@ package com.gdut.jh.demo.controller;
 import com.gdut.jh.demo.Result.Result;
 import com.gdut.jh.demo.Result.ResultFactory;
 import com.gdut.jh.demo.pojo.entity.Article;
+import com.gdut.jh.demo.pojo.entity.User;
 import com.gdut.jh.demo.pojo.entity.topic_article;
 import com.gdut.jh.demo.pojo.tmp.Url;
 import com.gdut.jh.demo.pojo.tmp.atopics;
 import com.gdut.jh.demo.service.ArticleService;
+import com.gdut.jh.demo.service.UserService;
 import com.gdut.jh.demo.utils.MyUtils;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.security.auth.Subject;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
@@ -25,6 +31,8 @@ import java.util.List;
 public class ArticleController {
     @Autowired
     ArticleService articleService;
+    @Autowired
+    UserService userService;
 
     @PostMapping("/article/img/add")
     @ResponseBody
@@ -75,11 +83,11 @@ public class ArticleController {
     public Result types(@RequestBody atopics ats){
         int aid = ats.getAid();
         List<Integer> types = ats.getTypes();
-        topic_article ta = new topic_article();
-        ta.setAid(aid);
         for(int type: types){
-            ta.setId(type);
-            articleService.saveAandT(ta);
+            topic_article tmp = new topic_article();
+            tmp.setAid(aid);
+            tmp.setTid(type);
+            articleService.saveAandT(tmp);
         }
         return ResultFactory.buildSuccessResult("主题保存成功！");
     }
@@ -105,13 +113,22 @@ public class ArticleController {
 
     @GetMapping("/article/detail/{id}")
     @ResponseBody
-    public Article getArticle(@PathVariable("id") int aid){
+    public Article getArticle(@PathVariable("id") int aid,HttpServletRequest request) {
+        String username = SecurityUtils.getSubject().getPrincipal().toString();
+        User user = userService.getUserByUsername(username);
+        userService.addUserRecord(user.getId(),aid);
         return articleService.getArticle(aid);
     }
 
     @GetMapping("/topic/{type}/{size}/{page}")
     @ResponseBody
-    public int getTopics(@PathVariable("type") String  type,@PathVariable("size") int size, @PathVariable("page") int page){
-        return articleService.getTopics(type,size,page);
+    public List<Article> getTopics(@PathVariable("type") String  type,@PathVariable("size") int size, @PathVariable("page") int page){
+        return articleService.getTopics(type,page,size);
+    }
+
+    @GetMapping("/article/getType/{aid}")
+    @ResponseBody
+    public List<String> getType(@PathVariable("aid") int aid){
+        return articleService.getTypes(aid);
     }
 }
