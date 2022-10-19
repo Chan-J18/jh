@@ -131,4 +131,22 @@ public class ArticleController {
     public List<String> getType(@PathVariable("aid") int aid){
         return articleService.getTypes(aid);
     }
+
+    @GetMapping("/article/recommend/{size}/{page}")
+    @ResponseBody
+    public List<Article> getRecommend(@PathVariable("size") int size, @PathVariable("page") int page){
+        String username = SecurityUtils.getSubject().getPrincipal().toString();
+        User user = userService.getUserByUsername(username);
+        List<Integer> uids = userService.getSimilarUser(user.getId());
+        return articleService.getArticleByUserId(uids,size,page);
+    }
+
+    @PostMapping("/article/updateUserFeature")
+    @ResponseBody
+    public void updateFeature(){
+        String username = SecurityUtils.getSubject().getPrincipal().toString();
+        User user = userService.getUserByUsername(username);
+        List<Integer> aids = userService.getUserRecord(user.getId());
+        userService.updateUserFeature(user.getId(),aids);
+    }
 }

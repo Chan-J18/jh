@@ -2,9 +2,11 @@ package com.gdut.jh.demo.service;
 
 import com.gdut.jh.demo.controller.ArticleController;
 import com.gdut.jh.demo.dao.ArticleDao;
+import com.gdut.jh.demo.dao.BrowseDao;
 import com.gdut.jh.demo.dao.TopicArticleDao;
 import com.gdut.jh.demo.dao.TopicDao;
 import com.gdut.jh.demo.pojo.entity.Article;
+import com.gdut.jh.demo.pojo.entity.Browse;
 import com.gdut.jh.demo.pojo.entity.Topic;
 import com.gdut.jh.demo.pojo.entity.topic_article;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,8 @@ public class ArticleService {
     TopicArticleDao topicArticleDao;
     @Autowired
     TopicDao topicDao;
+    @Autowired
+    BrowseDao browseDao;
 
     //发布文章
     public int addArticle(Article article){
@@ -68,5 +72,11 @@ public class ArticleService {
                 .map(topic_article::getTid).collect(Collectors.toList());
         return topicDao.findByIdIn(tids).stream()
                 .map(Topic::getName).collect(Collectors.toList());
+    }
+    //根据用户id获取 用户记录中的文章
+    public List<Article> getArticleByUserId(List<Integer> uids,int size,int page){
+        List<Integer> aids = browseDao.findByUidIn(uids).stream()
+                .map(Browse::getAid).collect(Collectors.toList());
+        return articleDao.findByAids(aids,page,size);
     }
 }

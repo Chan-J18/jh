@@ -14,8 +14,8 @@ public class Feature {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     int id;
-    boolean military;
-    boolean amusement;
-    boolean life;
+    float military;
+    float amusement;
+    float life;
     int len;
 }

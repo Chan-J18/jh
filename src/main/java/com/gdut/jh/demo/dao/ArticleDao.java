@@ -11,4 +11,5 @@ public interface ArticleDao extends JpaRepository<Article,Integer> {
     Article findById(int id);
     @Query(value="select * from article where id in ?1 order by id desc limit ?3 offset ?2",nativeQuery = true)
     List<Article> findByAids(List<Integer> aids,int offset,int size);
+    List<Article> findByIdIn(List<Integer> aids);
 }

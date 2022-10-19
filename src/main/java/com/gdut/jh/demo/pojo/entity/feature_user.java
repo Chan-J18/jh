@@ -16,5 +16,4 @@ public class feature_user {
     int id;
     int fid;
     int uid;
-    int times;
 }

@@ -8,4 +8,5 @@ import java.util.List;
 public interface TopicArticleDao extends JpaRepository<topic_article,Integer> {
     List<topic_article> findByTid(int tid);
     List<topic_article> findByAid(int aid);
+    List<topic_article> findByAidIn(List<Integer> aids);
 }
