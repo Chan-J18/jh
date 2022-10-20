@@ -1,5 +1,9 @@
 package com.gdut.jh.demo.utils;
 
+import com.gdut.jh.demo.pojo.entity.Article;
+import com.sun.xml.bind.v2.schemagen.xmlschema.Particle;
+
+import java.io.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -36,6 +40,75 @@ public class MyUtils {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    public static String toFile(String str,String pos){
+        ByteArrayInputStream is = new ByteArrayInputStream(str.getBytes());
+        OutputStream os = null;
+        String folder = "F:/Project/IDEAproject/Static/"+pos;
+        File f = new File(folder);
+        File file = new File(f,getRandomString(6));
+        if (!f.getParentFile().exists())
+            f.getParentFile().mkdir();
+
+        try {
+            os = new FileOutputStream(file);
+            int len = 0;
+            byte[] buffer = new byte[8192];
+
+            while ((len = is.read(buffer)) != -1) {
+                os.write(buffer, 0, len);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                os.close();
+                is.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return folder+"/"+file.getName();
+    }
+
+    public static String toString(String pos){
+        File file = new File(pos);
+        try {
+            InputStream is = new FileInputStream(file);
+            StringBuffer sb = null;
+            BufferedReader br = null;
+            try {
+                br = new BufferedReader(new InputStreamReader(is));
+
+                sb = new StringBuffer();
+
+                String data;
+                while ((data = br.readLine()) != null) {
+                    sb.append(data);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    br.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return sb.toString();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
+
+    public static Article articleTran(Article article){
+        article.setHtml(MyUtils.toString(article.getHtml()));
+        article.setMd(MyUtils.toString(article.getMd()));
+        return article;
     }
 
 }

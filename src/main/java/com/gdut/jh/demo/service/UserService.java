@@ -2,6 +2,8 @@ package com.gdut.jh.demo.service;
 
 import com.gdut.jh.demo.dao.*;
 import com.gdut.jh.demo.pojo.entity.*;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authc.UsernamePasswordToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +30,14 @@ public class UserService {
         return userDao.findByUsername(username);
     }
     public User getUserByUid(int uid) {return userDao.findById(uid);}
+    public void updateInfo(User u){
+        String username = SecurityUtils.getSubject().getPrincipal().toString();
+        User user = userDao.findByUsername(username);
+        user.setUsername(u.getUsername());
+        user.setEmail(u.getEmail());
+        user.setMotto(u.getMotto());
+        userDao.save(user);
+    }
 
     public void addUser(User user){
         int uid = userDao.save(user).getId();

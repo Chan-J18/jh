@@ -76,12 +76,17 @@ public class ArticleController {
     @PostMapping("/article/publish")
     @ResponseBody
     public int publish(@RequestBody Article article){
+        String username = SecurityUtils.getSubject().getPrincipal().toString();
+        int uid = userService.getUserByUsername(username).getId();
         int len = MyUtils.removeHtml(article.getHtml()).replaceAll("\r|\n","").length();
+        String htmlPos = MyUtils.toFile(article.getHtml(),"html");
+        String mdPos = MyUtils.toFile(article.getMd(),"md");
+        article.setMd(mdPos);
+        article.setHtml(htmlPos);
         article.setLen(len);
-        article.setVtimes(0);
-        article.setCtimes(0);
-        article.setAtimes(0);
-        return articleService.addArticle(article);
+        int aid =articleService.addArticle(article);
+        articleService.saveUandA(uid,aid);
+        return aid;
     }
 
     @PostMapping("/article/types")
@@ -125,7 +130,7 @@ public class ArticleController {
         Article article = articleService.getArticle(aid);
         article.setVtimes(article.getVtimes()+1);
         articleService.addArticle(article);
-        return article;
+        return MyUtils.articleTran(article);
     }
 
     @GetMapping("/topic/{type}/{size}/{page}")

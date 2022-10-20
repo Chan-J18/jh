@@ -1,14 +1,9 @@
 package com.gdut.jh.demo.service;
 
 import com.gdut.jh.demo.controller.ArticleController;
-import com.gdut.jh.demo.dao.ArticleDao;
-import com.gdut.jh.demo.dao.BrowseDao;
-import com.gdut.jh.demo.dao.TopicArticleDao;
-import com.gdut.jh.demo.dao.TopicDao;
-import com.gdut.jh.demo.pojo.entity.Article;
-import com.gdut.jh.demo.pojo.entity.Browse;
-import com.gdut.jh.demo.pojo.entity.Topic;
-import com.gdut.jh.demo.pojo.entity.topic_article;
+import com.gdut.jh.demo.dao.*;
+import com.gdut.jh.demo.pojo.entity.*;
+import com.gdut.jh.demo.utils.MyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -28,6 +23,8 @@ public class ArticleService {
     TopicDao topicDao;
     @Autowired
     BrowseDao browseDao;
+    @Autowired
+    PublishDao publishDao;
 
     //发布文章
     public int addArticle(Article article){
@@ -39,6 +36,12 @@ public class ArticleService {
         topicArticleDao.save(ta);
     }
 
+    public void saveUandA(int uid,int aid){
+        Publish publish = new Publish();
+        publish.setAid(aid);
+        publish.setUid(uid);
+        publishDao.save(publish);
+    }
     //分页获取文章
     public Page list(int page, int size) {
         Sort sort = Sort.by(Sort.Direction.DESC,"id");

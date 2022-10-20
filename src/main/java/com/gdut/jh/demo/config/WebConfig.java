@@ -12,6 +12,8 @@ public class WebConfig implements WebMvcConfigurer{
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         registry.addResourceHandler("/file/**").addResourceLocations("file:" + "f:/Project/IDEAproject/Static/img/");
+        registry.addResourceHandler("/html/**").addResourceLocations("file:" + "f:/Project/IDEAproject/Static/html/");
+        registry.addResourceHandler("/md/**").addResourceLocations("file:" + "f:/Project/IDEAproject/Static/md/");
     }
     @Override
     public void addCorsMappings(CorsRegistry registry) {

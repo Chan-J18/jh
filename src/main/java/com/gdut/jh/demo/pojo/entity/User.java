@@ -18,4 +18,6 @@ public class User {
     String salt;
     String username;
     String password;
+    String email;
+    String motto;
 }
