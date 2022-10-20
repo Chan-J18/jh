@@ -3,11 +3,14 @@ package com.gdut.jh.demo.controller;
 import com.gdut.jh.demo.Result.Result;
 import com.gdut.jh.demo.Result.ResultFactory;
 import com.gdut.jh.demo.pojo.entity.Article;
+import com.gdut.jh.demo.pojo.entity.Comment;
 import com.gdut.jh.demo.pojo.entity.User;
 import com.gdut.jh.demo.pojo.entity.topic_article;
 import com.gdut.jh.demo.pojo.tmp.Url;
 import com.gdut.jh.demo.pojo.tmp.atopics;
+import com.gdut.jh.demo.pojo.tmp.recomment;
 import com.gdut.jh.demo.service.ArticleService;
+import com.gdut.jh.demo.service.CommentService;
 import com.gdut.jh.demo.service.UserService;
 import com.gdut.jh.demo.utils.MyUtils;
 import org.apache.shiro.SecurityUtils;
@@ -22,6 +25,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -33,6 +37,8 @@ public class ArticleController {
     ArticleService articleService;
     @Autowired
     UserService userService;
+    @Autowired
+    CommentService commentService;
 
     @PostMapping("/article/img/add")
     @ResponseBody
@@ -92,12 +98,11 @@ public class ArticleController {
         return ResultFactory.buildSuccessResult("主题保存成功！");
     }
 
-    @GetMapping("/article/hot")
+    @GetMapping("/article/hot/{size}")
     @ResponseBody
-    public Page getHotArticles(){
-        return articleService.getHotArticles();
+    public Page getHotArticles(@PathVariable("size") int size) {
+        return articleService.getHotArticles(size);
     }
-
 
     @GetMapping("/article/{size}/{page}")
     @ResponseBody
@@ -117,7 +122,10 @@ public class ArticleController {
         String username = SecurityUtils.getSubject().getPrincipal().toString();
         User user = userService.getUserByUsername(username);
         userService.addUserRecord(user.getId(),aid);
-        return articleService.getArticle(aid);
+        Article article = articleService.getArticle(aid);
+        article.setVtimes(article.getVtimes()+1);
+        articleService.addArticle(article);
+        return article;
     }
 
     @GetMapping("/topic/{type}/{size}/{page}")
@@ -148,5 +156,49 @@ public class ArticleController {
         User user = userService.getUserByUsername(username);
         List<Integer> aids = userService.getUserRecord(user.getId());
         userService.updateUserFeature(user.getId(),aids);
+    }
+
+    @PostMapping("/article/addComment/UserComment")
+    @ResponseBody
+    public int UserComment(@RequestBody Comment comment){
+        String username = SecurityUtils.getSubject().getPrincipal().toString();
+        User user = userService.getUserByUsername(username);
+        int cid = commentService.addComment(comment);
+        commentService.saveCandU(cid,user.getId());
+        return cid;
+    }
+
+    @GetMapping("/article/addComment/CommentArticle/{aid}/{cid}")
+    @ResponseBody
+    public void CommentArticle(@PathVariable("aid") int aid,@PathVariable("cid")int cid){
+        commentService.saveCandA(cid,aid);
+        Article article = articleService.getArticle(aid);
+        article.setCtimes(article.getCtimes()+1);
+        articleService.addArticle(article);
+    }
+
+    @GetMapping("/article/getComments/{aid}")
+    @ResponseBody
+    public List<recomment> getComments(@PathVariable("aid") int aid){
+        List<Integer> cids = commentService.findCommentsByAid(aid);
+        List<recomment> list = new ArrayList<>();
+        List<Comment> comments = commentService.findCommentsByCid(cids);
+        for(Comment c: comments){
+            recomment rc = new recomment();
+            rc.setComment(c.getContent());
+            rc.setDate(c.getDate());
+            int uid = commentService.findUidByCid(c.getId());
+            rc.setUsername(userService.getUserByUid(uid).getUsername());
+            list.add(rc);
+        }
+        return list;
+    }
+
+    @GetMapping("/article/updateApp/{aid}")
+    @ResponseBody
+    public  void updateApp(@PathVariable("aid")int aid){
+        Article article = articleService.getArticle(aid);
+        article.setAtimes(article.getAtimes()+1);
+        articleService.addArticle(article);
     }
 }

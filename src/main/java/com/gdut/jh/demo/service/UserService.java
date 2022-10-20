@@ -27,6 +27,7 @@ public class UserService {
     public User getUserByUsername(String username){
         return userDao.findByUsername(username);
     }
+    public User getUserByUid(int uid) {return userDao.findById(uid);}
 
     public void addUser(User user){
         int uid = userDao.save(user).getId();
@@ -95,4 +96,6 @@ public class UserService {
         s.setMilitary(c1);s.setLife(c2);s.setAmusement(c3);
         featureDao.save(s);
     }
+
+
 }

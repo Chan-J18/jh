@@ -58,9 +58,9 @@ public class ArticleService {
         return articleDao.findAll(PageRequest.of(0,6,sort));
     }
     //获取热点文章
-    public Page getHotArticles(){
+    public Page getHotArticles(int size){
         Sort sort = Sort.by(Sort.Direction.DESC,"vtimes");
-        return articleDao.findAll(PageRequest.of(0,10,sort));
+        return articleDao.findAll(PageRequest.of(0,size,sort));
     }
     //获取文章详细页内容
     public Article getArticle(int id){
