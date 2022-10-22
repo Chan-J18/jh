@@ -2,8 +2,11 @@ package com.gdut.jh.demo.dao;
 
 import com.gdut.jh.demo.pojo.entity.Article;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.util.List;
 
 public interface ArticleDao extends JpaRepository<Article,Integer> {
@@ -12,4 +15,7 @@ public interface ArticleDao extends JpaRepository<Article,Integer> {
     @Query(value="select * from article where id in ?1 order by id desc limit ?3 offset ?2",nativeQuery = true)
     List<Article> findByAids(List<Integer> aids,int offset,int size);
     List<Article> findByIdIn(List<Integer> aids);
+    @Modifying
+    @Transactional
+    void deleteByIdIn(List<Integer> ids);
 }

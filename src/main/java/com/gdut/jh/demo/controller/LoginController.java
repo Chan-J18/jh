@@ -2,7 +2,10 @@ package com.gdut.jh.demo.controller;
 
 import com.gdut.jh.demo.Result.Result;
 import com.gdut.jh.demo.Result.ResultFactory;
+import com.gdut.jh.demo.dao.UserRoleDao;
 import com.gdut.jh.demo.pojo.entity.User;
+import com.gdut.jh.demo.service.RoleService;
+import com.gdut.jh.demo.service.UserRoleService;
 import com.gdut.jh.demo.service.UserService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
@@ -19,6 +22,10 @@ import org.springframework.web.bind.annotation.*;
 public class LoginController {
     @Autowired
     UserService userService;
+    @Autowired
+    UserRoleService userRoleService;
+    @Autowired
+    RoleService roleService;
 
     @PostMapping("/login")
     @ResponseBody
@@ -49,6 +56,15 @@ public class LoginController {
     public Result Authentication(@RequestBody User requestUser) {
         return getResult(requestUser);
     }
+
+    @GetMapping("/user/role/{username}")
+    @ResponseBody
+    public String role(@PathVariable("username") String username){
+        User user = userService.getUserByUsername(username);
+        int rid  = userRoleService.getByUid(user.getId()).getRid();
+        return roleService.getByRid(rid).getName();
+    }
+
 
     private Result getResult(@RequestBody User requestUser) {
         String username = requestUser.getUsername();

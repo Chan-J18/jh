@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Data
 @Entity
@@ -16,6 +17,10 @@ public class Menu {
     int id ;
     String path;
     String name;
-    String name_zh;
+    String nameZh;
+    String iconCls;
     String component;
+    int parentId;
+    @Transient
+    List<Menu> children;
 }

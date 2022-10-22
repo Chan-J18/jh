@@ -16,4 +16,8 @@ public class user_role {
     int id;
     int uid;
     int rid;
+    @Transient
+    String rolename;
+    @Transient
+    String username;
 }

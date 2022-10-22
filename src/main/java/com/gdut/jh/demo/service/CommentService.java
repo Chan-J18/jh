@@ -21,6 +21,7 @@ public class CommentService {
     @Autowired
     CommentArticleDao commentArticleDao;
 
+
     public int addComment(Comment comment){
         return commentDao.save(comment).getId();
     }
@@ -37,6 +38,16 @@ public class CommentService {
         ca.setCid(cid);
         ca.setAid(aid);
         commentArticleDao.save(ca);
+    }
+
+    public void deleteCandA(List<Integer> aids){
+         commentArticleDao.deleteByAidIn(aids);
+    }
+    public void deleteCandUid(int uid){
+        List<Integer> cids = userCommentDao.findByUid(uid).stream()
+                .map(user_comment::getCid).collect(Collectors.toList());
+        userCommentDao.deleteByUid(uid);
+        commentDao.deleteByIdIn(cids);
     }
 
     public List<Integer> findCommentsByAid(int aid){

@@ -25,6 +25,27 @@ public class UserService {
     ArticleDao articleDao;
     @Autowired
     TopicArticleDao topicArticleDao;
+    @Autowired
+    UserRoleDao userRoleDao;
+    @Autowired
+    PublishDao publishDao;
+    @Autowired
+    CommentService commentService;
+
+    public void delete(int id){
+        userDao.deleteById(id);//删除用户
+        featureDao.deleteById(featureUserDao.findByUid(id).getFid());// 删除用户特征项
+        featureUserDao.deleteByUid(id);//删除用户特征关系表项
+        browseDao.deleteByUid(id);//删除用户浏览记录
+        List<Integer> aids = publishDao.findByUid(id).stream().map(Publish::getAid).collect(Collectors.toList());
+        publishDao.deleteByUid(id);//删除发布关系表项
+        articleDao.deleteByIdIn(aids);//删除发布的文章
+        commentService.deleteCandA(aids);//删除发布每个文章下的文章评论关系表项，发的评论没删，发评论的用户可以查看自己的评论
+        commentService.deleteCandUid(id);//删除用户评论关系表项及用户发布的评论
+        userRoleDao.deleteByUid(id);//删除用户角色
+    }
+
+    public List<User> list(){ return  userDao.findAll();}
 
     public User getUserByUsername(String username){
         return userDao.findByUsername(username);
@@ -46,6 +67,10 @@ public class UserService {
         fu.setFid(fid);
         fu.setUid(uid);
         featureUserDao.save(fu);
+        user_role ur = new user_role();
+        ur.setUid(uid);
+        ur.setRid(1);
+        userRoleDao.save(ur);
     }
     //记录用户浏览记录
     public void addUserRecord(int uid,int aid){

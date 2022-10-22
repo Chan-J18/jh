@@ -20,6 +20,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.jnlp.IntegrationService;
 import javax.security.auth.Subject;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -93,6 +94,7 @@ public class ArticleController {
     @ResponseBody
     public Result types(@RequestBody atopics ats){
         int aid = ats.getAid();
+        articleService.deleteTypesByAid(aid);
         List<Integer> types = ats.getTypes();
         for(int type: types){
             topic_article tmp = new topic_article();
@@ -143,6 +145,13 @@ public class ArticleController {
     @ResponseBody
     public List<String> getType(@PathVariable("aid") int aid){
         return articleService.getTypes(aid);
+    }
+
+
+    @GetMapping("/article/getTags/{aid}")
+    @ResponseBody
+    public List<Integer> getTags(@PathVariable("aid") int aid){
+        return articleService.getTags(aid);
     }
 
     @GetMapping("/article/recommend/{size}/{page}")

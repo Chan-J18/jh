@@ -42,6 +42,15 @@ public class ArticleService {
         publish.setUid(uid);
         publishDao.save(publish);
     }
+    //文章管理获取文章列表
+    public List<Article> list(){
+        return articleDao.findAll();
+    }
+
+    public void  deleteTypesByAid(int aid){
+        topicArticleDao.deleteByAid(aid);
+    }
+
     //分页获取文章
     public Page list(int page, int size) {
         Sort sort = Sort.by(Sort.Direction.DESC,"id");
@@ -75,6 +84,11 @@ public class ArticleService {
                 .map(topic_article::getTid).collect(Collectors.toList());
         return topicDao.findByIdIn(tids).stream()
                 .map(Topic::getName).collect(Collectors.toList());
+    }
+    //获取文章对应标签 id
+    public List<Integer> getTags(int aid){
+        return  topicArticleDao.findByAid(aid).stream()
+                .map(topic_article::getTid).collect(Collectors.toList());
     }
     //根据用户id获取 用户记录中的文章
     public List<Article> getArticleByUserId(List<Integer> uids,int size,int page){
