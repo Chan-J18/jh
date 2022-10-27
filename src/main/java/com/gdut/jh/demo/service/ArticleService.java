@@ -25,6 +25,16 @@ public class ArticleService {
     BrowseDao browseDao;
     @Autowired
     PublishDao publishDao;
+    @Autowired
+    CommentArticleDao commentArticleDao;
+
+    public void delete(int id){
+        articleDao.deleteById(id);// 删除文章
+        browseDao.deleteByAid(id);// 删除用户浏览文章相应记录
+        commentArticleDao.deleteByAid(id);// 删除文章评论关系
+        publishDao.deleteByAid(id);// 删除用户发布文章关系
+        topicArticleDao.deleteByAid(id);// 删除文章标签关系
+    }
 
     //发布文章
     public int addArticle(Article article){
@@ -95,5 +105,9 @@ public class ArticleService {
         List<Integer> aids = browseDao.findByUidIn(uids).stream()
                 .map(Browse::getAid).collect(Collectors.toList());
         return articleDao.findByAids(aids,page,size);
+    }
+
+    public List<Article> search(String keywords){
+        return articleDao.findByTitleLike("%" + keywords + "%");
     }
 }

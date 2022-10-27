@@ -12,4 +12,7 @@ public interface CommentArticleDao extends JpaRepository<comment_article,Integer
     @Modifying
     @Transactional
     void deleteByAidIn(List<Integer> aids);
+    @Modifying
+    @Transactional
+    void deleteByAid(int aid);
 }

@@ -12,4 +12,7 @@ public interface PublishDao extends JpaRepository<Publish,Integer> {
     @Transactional
     void deleteByUid(int uid);
     List<Publish> findByUid(int uid);
+    @Modifying
+    @Transactional
+    void deleteByAid(int aid);
 }

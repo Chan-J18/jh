@@ -50,4 +50,9 @@ public class AdminController {
     public List<Article> listArticle(){
         return articleService.list();
     }
+
+    @GetMapping("/admin/article/delete/{id}")
+    public void deleteArticle(@PathVariable("id") int id){
+        articleService.delete(id);
+    }
 }

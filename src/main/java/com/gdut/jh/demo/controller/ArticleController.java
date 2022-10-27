@@ -116,6 +116,11 @@ public class ArticleController {
     public Page listArticles(@PathVariable("size") int size, @PathVariable("page") int page){
         return articleService.list(page-1,size);
     }
+    @GetMapping("/article/all")
+    @ResponseBody
+    public List<Article> all(){
+        return articleService.list();
+    }
 
     @GetMapping("/article/header")
     @ResponseBody
@@ -161,6 +166,12 @@ public class ArticleController {
         User user = userService.getUserByUsername(username);
         List<Integer> uids = userService.getSimilarUser(user.getId());
         return articleService.getArticleByUserId(uids,size,page);
+    }
+
+    @GetMapping("/article/search/{keywords}")
+    @ResponseBody
+    public List<Article> Search(@PathVariable("keywords")String keywords){
+        return articleService.search(keywords);
     }
 
     @PostMapping("/article/updateUserFeature")

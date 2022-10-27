@@ -13,4 +13,7 @@ public interface BrowseDao extends JpaRepository<Browse,Integer> {
     @Modifying
     @Transactional
     void deleteByUid(int uid);
+    @Modifying
+    @Transactional
+    void deleteByAid(int aid);
 }
